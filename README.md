@@ -1,73 +1,87 @@
-# Welcome to your Lovable project
+# AI-Driven Farmers' Disease Diagnosis & Reporting Portal
 
-## Project info
+A modern web application for farmers to diagnose crop diseases using AI, report incidents, and track disease spread through an interactive map.
 
-**URL**: https://lovable.dev/projects/4394175c-5bb7-44d7-80b8-aeaf391bb06d
+## Features
 
-## How can I edit this code?
+- 🔐 Complete authentication system (Login, Register, Forgot Password)
+- 📸 Photo upload for disease diagnosis
+- 🗺️ Interactive map showing disease reports
+- 📊 Real-time updates via WebSocket
+- 📱 Fully responsive design
+- 🎨 Beautiful agricultural-themed UI
+- ⚡ React Query for optimized data fetching
+- 🔄 Optimistic UI updates
 
-There are several ways of editing your application.
+## Quick Start
 
-**Use Lovable**
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/4394175c-5bb7-44d7-80b8-aeaf391bb06d) and start prompting.
+2. **Set up environment variables:**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your API endpoints
+   ```
 
-Changes made via Lovable will be committed automatically to this repo.
+3. **Run development server:**
+   ```bash
+   npm run dev
+   ```
 
-**Use your preferred IDE**
+4. **Open browser:**
+   Navigate to `http://localhost:8080`
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Project Structure
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+src/
+├── api/              # API configuration
+│   ├── axios.ts      # Axios instance with interceptors
+│   └── endpoints.ts  # API endpoint definitions
+├── services/         # API service layer
+│   ├── authService.ts
+│   ├── reportService.ts
+│   └── diseaseService.ts
+├── hooks/            # Custom React hooks
+│   ├── useAuth.ts
+│   ├── useReports.ts
+│   └── useRealtime.ts
+├── pages/            # Page components
+├── components/       # Reusable components
+├── context/          # React Context providers
+├── types/            # TypeScript type definitions
+└── utils/            # Utility functions
 ```
 
-**Edit a file directly in GitHub**
+## Tech Stack
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- **Frontend:** React 18, TypeScript
+- **Styling:** Tailwind CSS, shadcn/ui
+- **State:** React Query, Context API
+- **Maps:** Leaflet
+- **Forms:** React Hook Form, Zod validation
+- **HTTP:** Axios
+- **Real-time:** WebSocket/Socket.IO
 
-**Use GitHub Codespaces**
+## Development Notes
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- Replace `process.env.VITE_API_URL` in `.env` with your backend URL
+- WebSocket URL should point to your real-time server
+- JWT tokens are stored in httpOnly cookies (recommended) or localStorage
+- File uploads are handled via multipart/form-data
 
-## What technologies are used for this project?
+## API Integration
 
-This project is built with:
+The app is structured to easily integrate with your backend:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. Update `src/api/endpoints.ts` with your actual API routes
+2. Services in `src/services/` return axios promises
+3. React Query hooks handle caching and revalidation
+4. WebSocket hook (`useRealtime`) connects to your real-time server
 
-## How can I deploy this project?
+## License
 
-Simply open [Lovable](https://lovable.dev/projects/4394175c-5bb7-44d7-80b8-aeaf391bb06d) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+MIT
