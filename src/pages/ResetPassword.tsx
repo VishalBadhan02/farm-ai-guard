@@ -1,40 +1,61 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { authService } from '@/services/authService';
-import { ForgotPasswordFormData, forgotPasswordSchema } from '@/utils/validators';
 import { toast } from '@/hooks/use-toast';
 import { Leaf, Loader2, ArrowLeft } from 'lucide-react';
 
-export const ForgotPassword = () => {
+const resetPasswordSchema = z.object({
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ['confirmPassword'],
+});
+
+type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+
+export const ResetPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  const email = location.state?.email;
+  const token = location.state?.token;
 
-  const form = useForm<ForgotPasswordFormData>({
-    resolver: zodResolver(forgotPasswordSchema),
+  useEffect(() => {
+    if (!email || !token) {
+      navigate('/forgot-password');
+    }
+  }, [email, token, navigate]);
+
+  const form = useForm<ResetPasswordFormData>({
+    resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      email: '',
+      password: '',
+      confirmPassword: '',
     },
   });
 
-  const onSubmit = async (data: ForgotPasswordFormData) => {
+  const onSubmit = async (data: ResetPasswordFormData) => {
     setIsLoading(true);
     try {
-      await authService.forgotPassword(data.email);
+      await authService.resetPassword(token, data.password);
       toast({
-        title: 'Check your email',
-        description: 'Verification code has been sent to your email.',
+        title: 'Password reset successful',
+        description: 'You can now login with your new password.',
       });
-      navigate('/verify-otp', { state: { email: data.email, type: 'reset-password' } });
+      navigate('/login');
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.response?.data?.message || 'Failed to send reset email. Please try again.',
+        title: 'Reset failed',
+        description: error.response?.data?.message || 'Failed to reset password. Please try again.',
         variant: 'destructive',
       });
     } finally {
@@ -50,9 +71,9 @@ export const ForgotPassword = () => {
             <Leaf className="h-8 w-8 text-primary-foreground" />
           </div>
           <div>
-            <CardTitle className="text-2xl">Reset Password</CardTitle>
+            <CardTitle className="text-2xl">Set New Password</CardTitle>
             <CardDescription>
-              Enter your email to receive reset instructions
+              Enter your new password for {email}
             </CardDescription>
           </div>
         </CardHeader>
@@ -61,12 +82,25 @@ export const ForgotPassword = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="email"
+                name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>New Password</FormLabel>
                     <FormControl>
-                      <Input placeholder="farmer@example.com" type="email" {...field} />
+                      <Input placeholder="••••••••" type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm Password</FormLabel>
+                    <FormControl>
+                      <Input placeholder="••••••••" type="password" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -74,7 +108,7 @@ export const ForgotPassword = () => {
               />
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Send Reset Code
+                Reset Password
               </Button>
             </form>
           </Form>

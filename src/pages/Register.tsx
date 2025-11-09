@@ -33,9 +33,9 @@ export const Register = () => {
       await registerUser(data);
       toast({
         title: 'Account created!',
-        description: 'Welcome to AgriDiagnose',
+        description: 'Please verify your email to continue.',
       });
-      navigate('/dashboard');
+      navigate('/verify-otp', { state: { email: data.email, type: 'registration' } });
     } catch (error: any) {
       toast({
         title: 'Registration failed',

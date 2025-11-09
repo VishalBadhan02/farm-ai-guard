@@ -37,6 +37,16 @@ export const authService = {
     return response.data;
   },
 
+  async verifyOTP(email: string, otp: string) {
+    const response = await api.post(endpoints.auth.verifyOTP, { email, otp });
+    return response.data;
+  },
+
+  async resendOTP(email: string) {
+    const response = await api.post(endpoints.auth.resendOTP, { email });
+    return response.data;
+  },
+
   async getProfile() {
     const response = await api.get<User>(endpoints.auth.profile);
     return response.data;

@@ -10,6 +10,8 @@ export const endpoints = {
     forgotPassword: '/auth/forgot-password',
     resetPassword: '/auth/reset-password',
     verifyEmail: '/auth/verify-email',
+    verifyOTP: '/auth/verify-otp',
+    resendOTP: '/auth/resend-otp',
     profile: '/auth/profile',
   },
   reports: {
