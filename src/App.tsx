@@ -11,6 +11,7 @@ import { Register } from "./pages/Register";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import { Dashboard } from "./pages/Dashboard";
 import { Reports } from "./pages/Reports";
+import { NewReport } from "./pages/NewReport";
 import { MapPage } from "./pages/MapPage";
 import { Profile } from "./pages/Profile";
 import { Admin } from "./pages/Admin";
@@ -71,6 +72,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Reports />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reports/new"
+              element={
+                <ProtectedRoute>
+                  <NewReport />
                 </ProtectedRoute>
               }
             />
