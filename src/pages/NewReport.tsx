@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { UploadPhoto } from '@/components/UploadPhoto';
-import { DiagnosisCard } from '@/components/DiagnosisCard';
+import { DiagnosisDialog } from '@/components/DiagnosisDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,6 +24,7 @@ export const NewReport = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [diagnosis, setDiagnosis] = useState<DiagnosisResult | null>(null);
+  const [showDiagnosisDialog, setShowDiagnosisDialog] = useState(false);
 
   const handleAnalyze = async () => {
     if (files.length === 0) {
@@ -57,6 +58,7 @@ export const NewReport = () => {
     try {
       const result = await diseaseService.analyzeCropImage(formData);
       setDiagnosis(result);
+      setShowDiagnosisDialog(true);
       
       toast({
         title: 'Analysis Complete!',
@@ -190,81 +192,69 @@ export const NewReport = () => {
             </Card>
 
             {/* Analyze Button */}
-            {!diagnosis && (
-              <Button
-                size="lg"
-                className="w-full"
-                onClick={handleAnalyze}
-                disabled={isAnalyzing || files.length === 0 || !cropType.trim()}
-              >
-                {isAnalyzing ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Analyzing with AI...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="mr-2 h-5 w-5" />
-                    Analyze with AI
-                  </>
-                )}
-              </Button>
-            )}
+            <Button
+              size="lg"
+              className="w-full"
+              onClick={handleAnalyze}
+              disabled={isAnalyzing || files.length === 0 || !cropType.trim()}
+            >
+              {isAnalyzing ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Analyzing with AI...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="mr-2 h-5 w-5" />
+                  Analyze with AI
+                </>
+              )}
+            </Button>
 
-            {/* Diagnosis Results */}
+            {/* Action Buttons - Show after diagnosis */}
             {diagnosis && (
-              <>
-                <Card className="border-primary/50 bg-primary/5">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Sparkles className="h-5 w-5 text-primary" />
-                      AI Diagnosis Results
-                    </CardTitle>
-                    <CardDescription>
-                      Our AI has analyzed your crop images and detected the following disease
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <DiagnosisCard diagnosis={diagnosis} />
-                  </CardContent>
-                </Card>
-
-                {/* Action Buttons */}
-                <div className="flex gap-4">
-                  <Button
-                    size="lg"
-                    className="flex-1"
-                    onClick={handleSaveReport}
-                    disabled={isSaving}
-                  >
-                    {isSaving ? (
-                      <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="mr-2 h-5 w-5" />
-                        Save Report
-                      </>
-                    )}
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    onClick={() => {
-                      setDiagnosis(null);
-                      setFiles([]);
-                      setCropType('');
-                      setLocation('');
-                      setAdditionalNotes('');
-                    }}
-                  >
-                    New Analysis
-                  </Button>
-                </div>
-              </>
+              <div className="flex gap-4">
+                <Button
+                  size="lg"
+                  className="flex-1"
+                  onClick={handleSaveReport}
+                  disabled={isSaving}
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="mr-2 h-5 w-5" />
+                      Save Report
+                    </>
+                  )}
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => {
+                    setDiagnosis(null);
+                    setShowDiagnosisDialog(false);
+                    setFiles([]);
+                    setCropType('');
+                    setLocation('');
+                    setAdditionalNotes('');
+                  }}
+                >
+                  New Analysis
+                </Button>
+              </div>
             )}
+
+            {/* Diagnosis Dialog */}
+            <DiagnosisDialog
+              open={showDiagnosisDialog}
+              onOpenChange={setShowDiagnosisDialog}
+              diagnosis={diagnosis}
+            />
           </div>
         </div>
       </main>
