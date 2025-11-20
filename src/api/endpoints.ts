@@ -15,8 +15,8 @@ export const endpoints = {
     profile: '/auth/profile',
   },
   reports: {
-    list: '/reports',
-    create: '/reports',
+    list: '/diagnose/reports',
+    create: '/diagnose/reports',
     get: (id: string) => `/reports/${id}`,
     update: (id: string) => `/reports/${id}`,
     delete: (id: string) => `/reports/${id}`,
@@ -24,9 +24,9 @@ export const endpoints = {
     reject: (id: string) => `/reports/${id}/reject`,
     stats: '/reports/stats',
   },
-  diagnosis: {
-    analyze: '/diagnosis/analyze',
-    history: '/diagnosis/history',
+  diagnose: {
+    analyze: '/diagnose/analyze',
+    history: '/diagnose/history',
   },
   admin: {
     users: '/admin/users',
@@ -34,6 +34,9 @@ export const endpoints = {
     reports: '/admin/reports',
     stats: '/admin/stats',
   },
+  media:{
+    url:"/media/generate-upload-url"
+  }
 } as const;
 
 export default endpoints;

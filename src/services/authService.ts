@@ -8,7 +8,7 @@ export const authService = {
       endpoints.auth.login,
       credentials
     );
-    return response.data;
+    return response.data.data;
   },
 
   async register(data: RegisterData) {

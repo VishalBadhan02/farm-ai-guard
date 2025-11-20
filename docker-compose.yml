@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  react-app:
+    build:
+      context: .
+      dockerfile: DockerFile
+    ports:
+      - "8080:8080"            # Expose local port for Vite dev server
+    volumes:
+      - .:/app                 # Mount project folder for live editing
+      - /app/node_modules      # Prevent node_modules overwrite
+    environment:
+      - CHOKIDAR_USEPOLLING=true  # Needed for macOS & WSL hot-reload support
+    command: ["pnpm", "run", "dev", "--", "--host"]
+    stdin_open: true           # Keeps dev container interaction alive
+    tty: true                  # Allows logging and interactive shell

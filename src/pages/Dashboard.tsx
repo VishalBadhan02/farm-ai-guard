@@ -12,8 +12,12 @@ import { Link } from 'react-router-dom';
 export const Dashboard = () => {
   useRealtime(); // Connect to real-time updates
   
-  const { data: stats, isLoading: statsLoading } = useReportStats();
+  // const { data: stats, isLoading: statsLoading } = useReportStats();
   const { data: recentReports, isLoading: reportsLoading } = useReports();
+  const stats =[]
+  const statsLoading =false
+  // const recentReports = []
+  // const reportsLoading = false
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -41,7 +45,7 @@ export const Dashboard = () => {
           <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <StatsCard
               title="Total Reports"
-              value={statsLoading ? '...' : stats?.totalReports || 0}
+              value={statsLoading ? '...' : stats?.totalReports || 3}
               icon={FileText}
               description="All disease reports"
             />
@@ -59,7 +63,7 @@ export const Dashboard = () => {
             />
             <StatsCard
               title="Recent Diagnoses"
-              value={statsLoading ? '...' : stats?.recentDiagnoses || 0}
+              value={statsLoading ? '...' : stats?.recentDiagnoses || 1}
               icon={CheckCircle}
               description="Last 7 days"
             />
@@ -80,13 +84,13 @@ export const Dashboard = () => {
                   <div key={i} className="h-96 animate-pulse rounded-lg bg-muted" />
                 ))}
               </div>
-            ) : recentReports && recentReports.length > 0 ? (
+            ) : recentReports && recentReports?.data.length > 0 ? (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {recentReports.slice(0, 6).map((report) => (
+                {recentReports?.data?.slice(0, 6).map((report) => (
                   <ReportCard
-                    key={report.id}
+                    key={report?.id}
                     report={report}
-                    onView={(report) => window.location.href = `/reports/${report.id}`}
+                    onView={(report) => window.location.href = `/reports/${report?.id}`}
                   />
                 ))}
               </div>

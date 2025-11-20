@@ -14,6 +14,7 @@ interface ReportCardProps {
 }
 
 export const ReportCard = ({ report, onView, onApprove, onReject, showActions = false }: ReportCardProps) => {
+
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'low':
@@ -46,74 +47,74 @@ export const ReportCard = ({ report, onView, onApprove, onReject, showActions = 
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <h3 className="text-lg font-semibold text-foreground">{report.diseaseName}</h3>
-            <p className="text-sm text-muted-foreground">{report.cropType}</p>
+            <h3 className="text-lg font-semibold text-foreground">{report?.diseaseName}</h3>
+            <p className="text-sm text-muted-foreground">{report?.cropType}</p>
           </div>
           <div className="flex flex-col gap-2">
-            <Badge className={getSeverityColor(report.severity)}>
-              {report.severity.toUpperCase()}
+            <Badge className={getSeverityColor(report?.severity)}>
+              {report?.severity.toUpperCase()}
             </Badge>
-            <Badge className={getStatusColor(report.status)}>
-              {report.status.toUpperCase()}
+            <Badge className={getStatusColor(report?.status)}>
+              {report?.status.toUpperCase()}
             </Badge>
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="space-y-3">
-        {report.images && report.images.length > 0 && (
+        {report?.images && report?.images.length > 0 && (
           <div className="aspect-video w-full overflow-hidden rounded-lg bg-muted">
             <img
-              src={report.images[0]}
-              alt={report.diseaseName}
+              src={report?.images[0]}
+              alt={report?.diseaseName}
               className="h-full w-full object-cover"
             />
           </div>
         )}
 
-        <p className="line-clamp-2 text-sm text-muted-foreground">{report.description}</p>
+        <p className="line-clamp-2 text-sm text-muted-foreground">{report?.description}</p>
 
         <div className="space-y-1 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
             <UserIcon className="h-3 w-3" />
-            <span>{report.userName}</span>
+            <span>{report?.userName}</span>
           </div>
           <div className="flex items-center gap-2">
             <MapPin className="h-3 w-3" />
-            <span>{report.location.address || `${report.location.lat}, ${report.location.lng}`}</span>
+            <span>{report?.location.address || `${report?.location.lat}, ${report?.location.lng}`}</span>
           </div>
           <div className="flex items-center gap-2">
             <Calendar className="h-3 w-3" />
-            <span>{format(new Date(report.createdAt), 'PPP')}</span>
+            <span>{format(new Date(report?.createdAt), 'PPP')}</span>
           </div>
         </div>
 
-        {report.confidence && (
+        {report?.confidence && (
           <div className="flex items-center gap-2 text-sm">
             <span className="text-muted-foreground">Confidence:</span>
             <div className="flex items-center gap-2">
               <div className="h-2 w-24 rounded-full bg-muted">
                 <div
                   className="h-full rounded-full bg-gradient-primary transition-all"
-                  style={{ width: `${report.confidence * 100}%` }}
+                  style={{ width: `${report?.confidence}%` }}
                 />
               </div>
               <span className="text-xs font-medium text-foreground">
-                {(report.confidence * 100).toFixed(0)}%
+                {(report?.confidence)}%
               </span>
             </div>
           </div>
         )}
       </CardContent>
 
-      {showActions && report.status === 'pending' && (
+      {showActions && report?.status === 'pending' && (
         <CardFooter className="flex gap-2">
           <Button
             size="sm"
             variant="default"
             onClick={(e) => {
               e.stopPropagation();
-              onApprove?.(report.id);
+              onApprove?.(report?.id);
             }}
             className="flex-1"
           >
@@ -124,7 +125,7 @@ export const ReportCard = ({ report, onView, onApprove, onReject, showActions = 
             variant="destructive"
             onClick={(e) => {
               e.stopPropagation();
-              onReject?.(report.id);
+              onReject?.(report?.id);
             }}
             className="flex-1"
           >

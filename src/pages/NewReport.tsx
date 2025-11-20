@@ -14,6 +14,7 @@ import { reportService } from '@/services/reportService';
 import { DiagnosisResult } from '@/types';
 import { toast } from '@/hooks/use-toast';
 import { Loader2, Sparkles, Save } from 'lucide-react';
+import { MediaService } from '@/services/mediaService';
 
 export const NewReport = () => {
   const navigate = useNavigate();
@@ -46,28 +47,87 @@ export const NewReport = () => {
     }
 
     setIsAnalyzing(true);
-    const formData = new FormData();
-    
-    files.forEach((file) => {
-      formData.append('images', file);
-    });
-    formData.append('cropType', cropType);
-    if (location) formData.append('location', location);
-    if (additionalNotes) formData.append('notes', additionalNotes);
 
     try {
-      const result = await diseaseService.analyzeCropImage(formData);
-      setDiagnosis(result);
+      // 1) Build metadata for presigned URL request
+      const filesMeta = files.map((f: File, idx: number) => ({
+        mimetype: f.type || 'image/png',
+        originalName: f.name || `captured_${idx}.png`,
+      }));
+
+      // request body shape should match your backend (folder, files, data)
+      const requestBody = {
+        folder: "disease-media",
+        files: filesMeta,
+        data: {
+          // pass any conversation/tempId if needed by backend
+          // conversationId: currentConversationId,
+          // tempId: tempId
+        }
+      };
+
+      // 2) Ask backend to generate presigned URLs for all files at once
+      // adapt generateMultipleURLs to your existing wrapper (generateURL / MediaService.generateUrl)
+      const urlResponse = await MediaService.generateUrl(requestBody); // or await MediaService.generateUrl(requestBody)
+
+      if (!urlResponse?.status) {
+        throw new Error('Failed to generate presigned URLs');
+      }
+      const urls = urlResponse?.data.urls;
+
+      if (!Array.isArray(urls) || urls.length !== files.length) {
+        throw new Error('Mismatch between files and presigned URLs returned');
+      }
+
+      // 3) Upload files to S3 using the returned presigned URLs (PUT)
+      // Optionally track per-file progress by using XMLHttpRequest or fetch streams; here we use fetch for simplicity.
+      await Promise.all(urls.map(async (entry: { uploadUrl: string; key: string }, i: number) => {
+        const file = files[i];
+        const uploadUrl = entry.uploadUrl;
+
+        // Use fetch PUT to upload the file/blob directly to S3
+        const res = await fetch(uploadUrl, {
+          method: 'PUT',
+          body: file,
+          // Note: Do NOT set Content-Type header here for some S3 presigned setups; if necessary, ensure backend included ContentType in presigned policy.
+        });
+
+        if (!res.ok) {
+          // Attempt to log body text for easier debugging
+          const txt = await res.text().catch(() => '');
+          throw new Error(`S3 upload failed for file ${file.name}. status=${res.status} ${txt}`);
+        }
+      }));
+
+      // 4) Collect s3Keys and call analysis endpoint
+      const s3Keys = urls.map((u: { key: string }) => u.key);
+
+      // Build payload for analysis endpoint - adapt to what diseaseService expects
+      const payload = {
+        s3Keys,
+        bucket: "disease-modal",           // array of uploaded keys on S3
+        cropType,
+        location: location || undefined,
+        notes: additionalNotes || undefined,
+        // any other metadata you need (e.g., conversationId, userId)
+      };
+
+      // Call analyze API — assume it accepts JSON with s3Keys and returns result object
+      const result = await diseaseService.analyzeCropImage(payload);
+      // console.log(result)
+      // Handle result (adapt to the shape returned by your API)
+      setDiagnosis(result.data);
       setShowDiagnosisDialog(true);
-      
       toast({
         title: 'Analysis Complete!',
         description: `Detected: ${result.diseaseName} with ${(result.confidence * 100).toFixed(1)}% confidence`,
       });
+
     } catch (error: any) {
+      console.error('handleAnalyze error:', error);
       toast({
         title: 'Analysis Failed',
-        description: error.response?.data?.message || 'Failed to analyze crop images. Please try again.',
+        description: error.response?.data?.message || error.message || 'Failed to analyze crop images. Please try again.',
         variant: 'destructive',
       });
     } finally {
@@ -75,34 +135,32 @@ export const NewReport = () => {
     }
   };
 
+
   const handleSaveReport = async () => {
     if (!diagnosis) return;
 
     setIsSaving(true);
-    const formData = new FormData();
-    
-    files.forEach((file) => {
-      formData.append('images', file);
-    });
-    
-    formData.append('cropType', cropType);
-    formData.append('diseaseName', diagnosis.diseaseName);
-    formData.append('confidence', diagnosis.confidence.toString());
-    formData.append('severity', diagnosis.severity);
-    formData.append('description', diagnosis.description);
-    formData.append('treatment', diagnosis.treatment);
-    
-    if (location) formData.append('location', location);
-    if (additionalNotes) formData.append('notes', additionalNotes);
+   
 
+    const formd = {
+      cropType,
+      diseaseName: diagnosis.diseaseName,
+      confidence: diagnosis.confidence.toString(),
+      severity: diagnosis.severity,
+      description: diagnosis.description,
+      treatment: diagnosis.treatment,
+      location: location,
+      notes: additionalNotes,
+      imageKey: diagnosis.ImageKey
+    }
     try {
-      await reportService.createReport(formData);
-      
+      await reportService.createReport(formd);
+
       toast({
         title: 'Report Saved!',
         description: 'Your disease report has been saved successfully',
       });
-      
+
       navigate('/dashboard');
     } catch (error: any) {
       toast({
@@ -118,7 +176,7 @@ export const NewReport = () => {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      
+
       <main className="flex-1 bg-gradient-card py-8">
         <div className="container max-w-4xl px-4">
           <div className="mb-8">

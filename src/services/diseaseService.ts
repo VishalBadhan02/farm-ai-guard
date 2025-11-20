@@ -3,22 +3,23 @@ import endpoints from '@/api/endpoints';
 import { DiagnosisResult } from '@/types';
 
 export const diseaseService = {
-  async analyzeCropImage(formData: FormData) {
+  async analyzeCropImage(formData: any) {
     const response = await api.post<DiagnosisResult>(
-      endpoints.diagnosis.analyze,
+      endpoints.diagnose.analyze,
       formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
+      // {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //   },
+      // }
+      // body: JSON.stringify(formData)
     );
     return response.data;
   },
 
   async getDiagnosisHistory() {
     const response = await api.get<DiagnosisResult[]>(
-      endpoints.diagnosis.history
+      endpoints.diagnose.history
     );
     return response.data;
   },

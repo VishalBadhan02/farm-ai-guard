@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 
 export const Reports = () => {
   useRealtime();
-  
+
   const [filters, setFilters] = useState<ReportFilters>({});
   const { data: reports, isLoading } = useReports(filters);
 
@@ -22,23 +22,23 @@ export const Reports = () => {
   };
 
   const handleStatusChange = (value: string) => {
-    setFilters(prev => ({ 
-      ...prev, 
-      status: value === 'all' ? undefined : value as ReportFilters['status'] 
+    setFilters(prev => ({
+      ...prev,
+      status: value === 'all' ? undefined : value as ReportFilters['status']
     }));
   };
 
   const handleSeverityChange = (value: string) => {
-    setFilters(prev => ({ 
-      ...prev, 
-      severity: value === 'all' ? undefined : value as ReportFilters['severity'] 
+    setFilters(prev => ({
+      ...prev,
+      severity: value === 'all' ? undefined : value as ReportFilters['severity']
     }));
   };
 
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      
+
       <main className="flex-1 bg-gradient-card py-8">
         <div className="container px-4">
           {/* Header */}
@@ -67,7 +67,7 @@ export const Reports = () => {
                 onChange={(e) => handleSearchChange(e.target.value)}
               />
             </div>
-            
+
             <Select onValueChange={handleStatusChange} defaultValue="all">
               <SelectTrigger>
                 <SelectValue placeholder="Status" />
@@ -106,13 +106,13 @@ export const Reports = () => {
                 <div key={i} className="h-96 animate-pulse rounded-lg bg-muted" />
               ))}
             </div>
-          ) : reports && reports.length > 0 ? (
+          ) : reports && reports?.data.length > 0 ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {reports.map((report) => (
+              {reports?.data.map((report) => (
                 <ReportCard
-                  key={report.id}
+                  key={report?.id}
                   report={report}
-                  onView={(report) => window.location.href = `/reports/${report.id}`}
+                  onView={(report) => window.location.href = `/reports/${report?.id}`}
                 />
               ))}
             </div>

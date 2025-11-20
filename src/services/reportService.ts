@@ -15,15 +15,15 @@ export const reportService = {
     return response.data;
   },
 
-  async createReport(formData: FormData) {
+  async createReport(formData: any) {
     const response = await api.post<DiseaseReport>(
       endpoints.reports.create,
       formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
+      // {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //   },
+      // }
     );
     return response.data;
   },

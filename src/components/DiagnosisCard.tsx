@@ -40,11 +40,11 @@ export const DiagnosisCard = ({ diagnosis }: DiagnosisCardProps) => {
     <Card className="shadow-card hover:shadow-lg-custom transition-all duration-300">
       <CardHeader>
         <div className="flex items-start justify-between">
-          <CardTitle className="text-xl">{diagnosis.diseaseName}</CardTitle>
-          <Badge className={getSeverityColor(diagnosis.severity)}>
+          <CardTitle className="text-xl">{diagnosis?.diseaseName}</CardTitle>
+          <Badge className={getSeverityColor(diagnosis?.severity)}>
             <span className="flex items-center gap-1">
-              {getSeverityIcon(diagnosis.severity)}
-              {diagnosis.severity.toUpperCase()}
+              {getSeverityIcon(diagnosis?.severity)}
+              {diagnosis?.severity.toUpperCase()}
             </span>
           </Badge>
         </div>
@@ -55,11 +55,12 @@ export const DiagnosisCard = ({ diagnosis }: DiagnosisCardProps) => {
               <div className="h-2 w-32 rounded-full bg-muted">
                 <div
                   className="h-full rounded-full bg-gradient-primary transition-all"
-                  style={{ width: `${diagnosis.confidence * 100}%` }}
+                  style={{ width: `${diagnosis?.confidence}%` }}
                 />
               </div>
               <span className="font-medium text-foreground">
-                {(diagnosis.confidence * 100).toFixed(1)}%
+                {/* {(diagnosis?.confidence * 100).toFixed(1)}% */}
+                {diagnosis?.confidence }
               </span>
             </div>
           </div>
@@ -68,19 +69,19 @@ export const DiagnosisCard = ({ diagnosis }: DiagnosisCardProps) => {
       <CardContent className="space-y-4">
         <div>
           <h4 className="mb-2 text-sm font-semibold text-foreground">Description</h4>
-          <p className="text-sm text-muted-foreground">{diagnosis.description}</p>
+          <p className="text-sm text-muted-foreground">{diagnosis?.description}</p>
         </div>
 
         <div>
           <h4 className="mb-2 text-sm font-semibold text-foreground">Treatment</h4>
-          <p className="text-sm text-muted-foreground">{diagnosis.treatment}</p>
+          <p className="text-sm text-muted-foreground">{diagnosis?.treatment}</p>
         </div>
 
-        {diagnosis.preventiveMeasures && diagnosis.preventiveMeasures.length > 0 && (
+        {diagnosis?.preventiveMeasures && diagnosis?.preventiveMeasures.length > 0 && (
           <div>
             <h4 className="mb-2 text-sm font-semibold text-foreground">Preventive Measures</h4>
             <ul className="space-y-1 text-sm text-muted-foreground">
-              {diagnosis.preventiveMeasures.map((measure, index) => (
+              {diagnosis?.preventiveMeasures.map((measure, index) => (
                 <li key={index} className="flex items-start gap-2">
                   <CheckCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-success" />
                   <span>{measure}</span>
@@ -90,11 +91,11 @@ export const DiagnosisCard = ({ diagnosis }: DiagnosisCardProps) => {
           </div>
         )}
 
-        {diagnosis.affectedCrops && diagnosis.affectedCrops.length > 0 && (
+        {diagnosis?.affectedCrops && diagnosis?.affectedCrops.length > 0 && (
           <div>
             <h4 className="mb-2 text-sm font-semibold text-foreground">Affected Crops</h4>
             <div className="flex flex-wrap gap-2">
-              {diagnosis.affectedCrops.map((crop, index) => (
+              {diagnosis?.affectedCrops.map((crop, index) => (
                 <Badge key={index} variant="secondary">
                   {crop}
                 </Badge>

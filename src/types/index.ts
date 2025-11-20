@@ -14,7 +14,7 @@ export interface AuthTokens {
 }
 
 export interface LoginCredentials {
-  email: string;
+  emailOrPhone: string;
   password: string;
 }
 
@@ -77,4 +77,11 @@ export interface ReportFilters {
   dateFrom?: string;
   dateTo?: string;
   searchQuery?: string;
+}
+
+export interface Media {
+  folder: any;
+  files: any;
+  originalName?: any
+  data: any;
 }
